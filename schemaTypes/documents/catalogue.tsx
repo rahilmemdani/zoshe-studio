@@ -85,8 +85,21 @@ export const catalogueType = defineType({
       type: 'boolean',
       description: 'Mark this product as Premium',
       initialValue: false,
-    })
-    
+    }),
+    defineField({
+      name: 'isActive',
+      title: 'Product Active',
+      type: 'boolean',
+      description: 'Is this product active?',
+      initialValue: true,
+    }),
+    defineField({
+      name: 'isOutOfStock',
+      title: 'Product out of stock',
+      type: 'boolean',
+      description: 'Mark this product out of stock',
+      initialValue: false,
+    }) 
   ],
   preview: {
     select: {
