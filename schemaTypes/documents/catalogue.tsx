@@ -1,4 +1,3 @@
-// schemas/documents/catalogue.ts
 import { defineField, defineType } from 'sanity'
 
 export const catalogueType = defineType({
@@ -21,10 +20,28 @@ export const catalogueType = defineType({
     }),
     defineField({
       name: 'price',
-      title: 'Price',
+      title: 'Actual Price',
       type: 'number',
-      description: 'Price in INR',
+      description: 'Original price in INR',
       validation: (rule) => rule.required(),
+    }),
+    defineField({
+      name: 'discountedPrice',
+      title: 'Discounted Price',
+      type: 'number',
+      description: 'Discounted price (leave empty if no discount)',
+      validation: (Rule) =>
+        Rule.custom((discountedPrice, context) => {
+          const actualPrice = context?.document?.actualPrice as number | undefined
+          if (
+            discountedPrice !== undefined &&
+            actualPrice !== undefined &&
+            discountedPrice >= actualPrice
+          ) {
+            return 'Discounted price must be less than actual price'
+          }
+          return true
+        }),
     }),
     defineField({
       name: 'images',
@@ -38,21 +55,11 @@ export const catalogueType = defineType({
       type: 'array',
       of: [{ type: 'block' }],
     }),
-    // defineField({
-    //   name: 'category',
-    //   title: 'Category',
-    //   type: 'reference',
-    //   to: [{ type: 'category' }],
-    // }),
     defineField({
       name: 'scentProfile',
       title: 'Scent Profile',
       type: 'array',
-      of: [
-        {
-          type: 'string',
-        },
-      ],
+      of: [{ type: 'string' }],
       options: {
         list: [
           { title: 'Floral', value: 'Floral' },
@@ -62,7 +69,7 @@ export const catalogueType = defineType({
           { title: 'Citrus', value: 'Citrus' },
           { title: 'Spicy', value: 'Spicy' },
         ],
-        layout: 'tags', 
+        layout: 'tags',
       },
       description: 'Fragrance family / scent notes',
     }),
@@ -71,7 +78,6 @@ export const catalogueType = defineType({
       title: 'Promotion',
       type: 'string',
       initialValue: '',
-      description: '',
     }),
     defineField({
       name: 'publishedAt',
@@ -99,13 +105,21 @@ export const catalogueType = defineType({
       type: 'boolean',
       description: 'Mark this product out of stock',
       initialValue: false,
-    }) 
+    }),
   ],
   preview: {
     select: {
       title: 'name',
-      subtitle: 'category.title',
+      subtitle: 'actualPrice',
       media: 'images.0',
+    },
+    prepare(selection) {
+      const { title, subtitle, media } = selection
+      return {
+        title,
+        subtitle: subtitle ? `₹${subtitle}` : '',
+        media,
+      }
     },
   },
 })
