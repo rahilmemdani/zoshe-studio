@@ -32,8 +32,27 @@ export const customizationType = defineType({
     }),
     defineField({
       name: 'price',
-      title: 'Price',
+      title: 'Actual Price',
       type: 'string',
+      description: 'Original price in INR'
+    }),
+    defineField({
+      name: 'discountedPrice',
+      title: 'Discounted Price',
+      type: 'number',
+      description: 'Discounted price (leave empty if no discount)',
+      validation: (Rule) =>
+        Rule.custom((discountedPrice, context) => {
+          const actualPrice = context?.document?.actualPrice as number | undefined
+          if (
+            discountedPrice !== undefined &&
+            actualPrice !== undefined &&
+            discountedPrice >= actualPrice
+          ) {
+            return 'Discounted price must be less than actual price'
+          }
+          return true
+        }),
     }),
     defineField({
       name: 'popular',
