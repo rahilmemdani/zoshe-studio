@@ -3,5 +3,6 @@ import { catalogueType } from './documents/catalogue'
 import { customizationType } from './documents/category'
 import { faqType } from './documents/faq'
 import { bannerType } from "./documents/banner";
+import { policyType } from "./documents/policy";
 
-export const schemaTypes = [customizationType, catalogueType, faqType, bannerType]
+export const schemaTypes = [customizationType, catalogueType, faqType, bannerType, policyType]
